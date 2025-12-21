@@ -1,0 +1,15 @@
+body {
+  background: #f7f8fb;
+  color: #1f2933;
+}
+
+.card {
+  border: none;
+}
+
+.stat-pill {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
