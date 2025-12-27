@@ -20,3 +20,33 @@ body {
   border-radius: 999px;
   font-size: 0.9rem;
 }
+
+#trackList li {
+  border-left: 4px solid #3498db;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background: #f3f6fb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+#trackList li:hover {
+  background: #eaf2fb;
+}
+
+#trackList .name {
+  font-weight: 600;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#trackList .meta {
+  font-size: 0.85rem;
+  color: #52606d;
+  white-space: nowrap;
+}
