@@ -17,10 +17,12 @@ function parseGPXFile(file) {
         
         const points = [];
         trkpts.forEach(pt => {
+          const timeNode = pt.querySelector('time');
           points.push({
             lat: parseFloat(pt.getAttribute('lat')),
             lng: parseFloat(pt.getAttribute('lon')),
-            ele: parseFloat(pt.querySelector('ele')?.textContent || 0)
+            ele: parseFloat(pt.querySelector('ele')?.textContent || 0),
+            time: timeNode ? new Date(timeNode.textContent).toISOString() : null
           });
         });
         

@@ -30,3 +30,15 @@ function calculateElevation(points) {
   
   return gain;
 }
+
+// Calculate total duration in seconds using first and last timestamps (if present)
+function calculateDuration(points) {
+  const times = points.map(p => p.time).filter(Boolean);
+  if (times.length < 2) return null;
+
+  const start = new Date(times[0]).getTime();
+  const end = new Date(times[times.length - 1]).getTime();
+  const diffSeconds = Math.max(0, Math.round((end - start) / 1000));
+
+  return Number.isFinite(diffSeconds) ? diffSeconds : null;
+}
