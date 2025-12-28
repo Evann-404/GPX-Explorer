@@ -20,13 +20,20 @@ document.getElementById('gpxInput').addEventListener('change', async (e) => {
 
 // Load and process a single GPX file
 async function loadGPXFile(file, index) {
+  // Check if file already loaded
+  if (tracks.some(t => t.name === file.name)) {
+    console.warn(`Track "${file.name}" is already loaded. Skipping.`);
+    return;
+  }
+  
   // Parse GPX
   const points = await parseGPXFile(file);
   
   // Calculate stats
   const distance = calculateDistance(points);
   const elevation = calculateElevation(points);
-  const color = colors[index % colors.length];
+  const duration = calculateDuration(points);
+  const color = colors[tracks.length % colors.length];
   
   // Draw on map
   const polyline = drawTrackOnMap(points, color);
@@ -37,8 +44,10 @@ async function loadGPXFile(file, index) {
     name: file.name,
     distance: distance,
     elevation: elevation,
+    duration: duration,
     color: color,
-    polyline: polyline
+    polyline: polyline,
+    points: points
   });
   
   // Update UI
