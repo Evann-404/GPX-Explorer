@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create Route - GPX Explorer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="py-4 border-bottom">
+    <div class="container">
+      <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+        <div>
+          <h1 class="h3 mb-1"><i class="bi bi-map me-2"></i>GPX Explorer</h1>
+          <p class="mb-0">Create custom cycling and running routes.</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="bg-white border-bottom py-2">
+    <div class="container">
+      <div class="d-flex gap-2 flex-wrap">
+        <a href="index.html" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-house me-1"></i>Home
+        </a>
+        <a href="viewer.html" class="btn btn-outline-primary btn-sm">
+          <i class="bi bi-eye me-1"></i>View Tracks
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="py-4">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-12">
+          <div class="alert alert-info d-flex align-items-center gap-2" role="alert">
+            <span class="badge bg-primary">Tip</span>
+            <span>Click on the map to add points to your route.</span>
+          </div>
+          <div class="alert alert-info d-flex align-items-center gap-2" role="alert">
+            <span class="badge bg-primary">Tip</span>
+            <span>Press <kbd>Ctrl+Z</kbd> to undo the last point.</span>
+          </div>
+          <div class="alert alert-warning d-none" role="alert" id="apiWarning">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <span id="apiWarningText"></span>
+          </div>
+        </div>
+
+        <div class="col-lg-9">
+          <div class="card shadow-sm h-100">
+            <div class="card-body p-0" style="height: 500px;">
+              <div id="map" style="width: 100%; height: 100%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title mb-3"><i class="bi bi-tools me-2"></i>Route Tools</h5>
+              
+              <div class="mb-3">
+                <label for="routeName" class="form-label">Route Name</label>
+                <input type="text" class="form-control" id="routeName" placeholder="My awesome route" value="">
+              </div>
+
+              <div class="btn-group w-100 mb-3" role="group" aria-label="Route editing tools">
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="undoBtn" title="Undo last point" aria-label="Undo last point (Ctrl+Z)">
+                  <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i> Undo
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="clearBtn" title="Clear all points" aria-label="Clear entire route">
+                  <i class="bi bi-trash" aria-hidden="true"></i> Clear
+                </button>
+              </div>
+
+              <hr>
+
+              <h6 class="mb-2"><i class="bi bi-bar-chart-line me-2" aria-hidden="true"></i>Statistics</h6>
+              <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="text-muted small">Distance</span>
+                  <span id="routeDistance" class="fw-semibold">0.00 km</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="text-muted small">Points</span>
+                  <span id="routePoints" class="fw-semibold">0</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="text-muted small">Elevation</span>
+                  <span id="routeElevation" class="fw-semibold">0 m</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="text-muted small">Status</span>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="status-indicator bg-success rounded-circle" style="width: 10px; height: 10px;"></span>
+                    <span id="loadingStatus" class="small text-muted">Ready</span>
+                  </div>
+                </div>
+              </div>
+
+              <hr>
+
+              <h6 class="mb-2"><i class="bi bi-sliders me-2"></i>Options</h6>
+              <div class="mb-3">
+                <label for="routeProfile" class="form-label small mb-1">Routing mode</label>
+                <select id="routeProfile" class="form-select form-select-sm">
+                  <option value="foot">Walking</option>
+                  <option value="bike">Cycling</option>
+                </select>
+                <div class="form-text small">Powered by OSRM (demo)</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="routeColor" class="form-label small mb-1">Route Color</label>
+                <input type="color" id="routeColor" class="form-control form-control-color" value="#3498db" style="height: 38px;">
+              </div>
+
+              <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="enableRouting" checked>
+                <label class="form-check-label small" for="enableRouting">
+                  Follow roads (disable to draw straight lines)
+                </label>
+              </div>
+
+              <button type="button" class="btn btn-success w-100" id="exportBtn" disabled aria-label="Export route as GPX file">
+                <i class="bi bi-download me-1" aria-hidden="true"></i>Export as GPX
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4 bg-light border-top mt-5">
+    <div class="container">
+      <div class="small text-muted d-flex justify-content-between align-items-center">
+        <span>Author: <a href="https://github.com/Evann-404" target="_blank" rel="noopener">Evann-404</a></span>
+        <span>MIT License</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="assets/js/calculations.js"></script>
+  <script src="assets/js/gpxExporter.js"></script>
+  <script src="assets/js/routeStorage.js"></script>
+  <script src="assets/js/routeMarkers.js"></script>
+  <script src="assets/js/routeSnapping.js"></script>
+  <script src="assets/js/routeElevation.js"></script>
+  <script src="assets/js/routePolyline.js"></script>
+  <script src="assets/js/routeBuilder.js"></script>
+</body>
+</html>
