@@ -16,8 +16,14 @@ body {
 }
 
 header {
-  background: linear-gradient(to right, #ffffff, #f8f9fa) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  background: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  color: white;
+}
+
+header h1,
+header p {
+  color: white;
 }
 
 .card {
